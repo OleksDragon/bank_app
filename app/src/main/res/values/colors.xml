@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <!-- 🌞 Светлая тема -->
+    <!-- 🌞 Світла тема -->
     <color name="background_color_light">#FFF9E6</color>
     <color name="text_color_light">#1E3A8A</color>
     <color name="button_background_light">#1E3A8A</color>
@@ -8,8 +8,10 @@
     <color name="edit_text_background_light">#FFF3CD</color>
     <color name="link_color_light">#1976D2</color>
     <color name="hint_color_light">#801E3A8A</color>
+    <color name="card_background_light">#1E3A8A</color>
+    <color name="card_text_color_light">#FFE6EB</color>
 
-    <!-- 🌚 Тёмная тема -->
+    <!-- 🌚 Темна тема -->
     <color name="background_color_dark">#1E3A8A</color>
     <color name="text_color_dark">#FFF9E6</color>
     <color name="button_background_dark">#FFF9E6</color>
@@ -17,4 +19,6 @@
     <color name="edit_text_background_dark">#283593</color>
     <color name="link_color_dark">#42A5F5</color>
     <color name="hint_color_dark">#80FFF9E6</color>
+    <color name="card_background_dark">#FFF9E6</color>
+    <color name="card_text_color_dark">#1E3A8A</color>
 </resources>

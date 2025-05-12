@@ -3,4 +3,6 @@
     <attr name="appButtonStyle" format="reference" />
     <attr name="appEditTextStyle" format="reference" />
     <attr name="appLinkTextViewStyle" format="reference" />
+    <attr name="cardBackground" format="reference" />
+    <attr name="cardTextColor" format="reference" />
 </resources>

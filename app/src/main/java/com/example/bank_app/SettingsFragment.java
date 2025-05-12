@@ -1,5 +1,7 @@
 package com.example.bank_app;
 
+import static android.content.Context.MODE_PRIVATE;
+
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
@@ -19,6 +21,15 @@ public class SettingsFragment extends Fragment {
     private Switch darkThemeSwitch;
     private Button saveButton, logoutButton;
     private ThemeManager themeManager;
+    private static final String ARG_LOGIN = "login";
+
+    public static SettingsFragment newInstance(String login) {
+        SettingsFragment fragment = new SettingsFragment();
+        Bundle args = new Bundle();
+        args.putString(ARG_LOGIN, login);
+        fragment.setArguments(args);
+        return fragment;
+    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -59,6 +70,12 @@ public class SettingsFragment extends Fragment {
         logoutButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                // Очищаємо сесію
+                SharedPreferences prefs = requireContext().getSharedPreferences("UserSession", MODE_PRIVATE);
+                SharedPreferences.Editor editor = prefs.edit();
+                editor.remove("login");
+                editor.apply();
+
                 Intent intent = new Intent(requireContext(), LoginActivity.class);
                 startActivity(intent);
                 requireActivity().finishAffinity();
@@ -69,14 +86,14 @@ public class SettingsFragment extends Fragment {
     }
 
     private void loadSavedData() {
-        SharedPreferences prefs = requireContext().getSharedPreferences("AppSettings", requireContext().MODE_PRIVATE);
+        SharedPreferences prefs = requireContext().getSharedPreferences("AppSettings", MODE_PRIVATE);
         nameEditText.setText(prefs.getString("Name", ""));
         addressEditText.setText(prefs.getString("Address", ""));
         phoneEditText.setText(prefs.getString("Phone", ""));
     }
 
     private void saveProfileData() {
-        SharedPreferences prefs = requireContext().getSharedPreferences("AppSettings", requireContext().MODE_PRIVATE);
+        SharedPreferences prefs = requireContext().getSharedPreferences("AppSettings", MODE_PRIVATE);
         SharedPreferences.Editor editor = prefs.edit();
         editor.putString("Name", nameEditText.getText().toString().trim());
         editor.putString("Address", addressEditText.getText().toString().trim());

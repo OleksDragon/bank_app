@@ -2,6 +2,7 @@ package com.example.bank_app;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -13,11 +14,12 @@ public class RegisterActivity extends AppCompatActivity {
     private EditText nameEditText, emailEditText, passwordEditText, confirmPasswordEditText;
     private DatabaseHelper dbHelper;
     private ThemeManager themeManager;
+    private static final String TAG = "RegisterActivity";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         themeManager = new ThemeManager(this);
-        themeManager.applyTheme();
+        themeManager.onActivityCreate();
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_register);
 
@@ -37,6 +39,7 @@ public class RegisterActivity extends AppCompatActivity {
                 String email = emailEditText.getText().toString().trim();
                 String password = passwordEditText.getText().toString().trim();
                 String confirmPassword = confirmPasswordEditText.getText().toString().trim();
+                Log.d(TAG, "Реєстрація: email=" + email + ", password=" + password);
 
                 if (name.isEmpty() || email.isEmpty() || password.isEmpty() || confirmPassword.isEmpty()) {
                     Toast.makeText(RegisterActivity.this, "Заповніть усі поля", Toast.LENGTH_SHORT).show();
@@ -48,14 +51,15 @@ public class RegisterActivity extends AppCompatActivity {
                     return;
                 }
 
-                // Для спрощення використовуємо email як логін
                 if (dbHelper.addUser(email, password)) {
+                    Log.d(TAG, "Користувач успішно зареєстрований: " + email);
                     Toast.makeText(RegisterActivity.this, "Акаунт створено! Увійдіть", Toast.LENGTH_SHORT).show();
                     Intent intent = new Intent(RegisterActivity.this, LoginActivity.class);
                     startActivity(intent);
                     finish();
                 } else {
-                    Toast.makeText(RegisterActivity.this, "Користувач з таким email уже існує", Toast.LENGTH_SHORT).show();
+                    Log.w(TAG, "Помилка реєстрації для email: " + email);
+                    Toast.makeText(RegisterActivity.this, "Помилка: Користувач з таким email уже існує або інша проблема", Toast.LENGTH_SHORT).show();
                 }
             }
         });

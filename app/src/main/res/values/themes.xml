@@ -13,6 +13,9 @@
         <item name="appButtonStyle">@style/AppButton.Light</item>
         <item name="appEditTextStyle">@style/AppEditText.Light</item>
         <item name="appLinkTextViewStyle">@style/AppLinkTextView.Light</item>
+        <!-- Кольори для картки -->
+        <item name="cardBackground">@color/card_background_light</item>
+        <item name="cardTextColor">@color/card_text_color_light</item>
     </style>
 
     <!-- Темна тема -->
@@ -29,6 +32,9 @@
         <item name="appButtonStyle">@style/AppButton.Dark</item>
         <item name="appEditTextStyle">@style/AppEditText.Dark</item>
         <item name="appLinkTextViewStyle">@style/AppLinkTextView.Dark</item>
+        <!-- Кольори для картки -->
+        <item name="cardBackground">@color/card_background_dark</item>
+        <item name="cardTextColor">@color/card_text_color_dark</item>
     </style>
 
     <!-- Базова тема -->

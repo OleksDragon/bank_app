@@ -1,14 +1,257 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:orientation="vertical"
-    android:gravity="center">
+    android:layout_height="match_parent">
 
-    <TextView
-        android:id="@+id/text_my_account"
-        android:layout_width="wrap_content"
+    <LinearLayout
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:textSize="20sp" />
+        android:orientation="vertical"
+        android:padding="16dp">
 
-</LinearLayout>
+        <!-- Заголовок -->
+        <TextView
+            android:id="@+id/text_my_account"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Мій рахунок"
+            android:textSize="28sp"
+            android:textStyle="bold"
+            android:layout_gravity="center"
+            android:layout_marginBottom="24dp"/>
+
+        <!-- Банківська картка -->
+        <androidx.cardview.widget.CardView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:cardCornerRadius="16dp"
+            app:cardElevation="4dp"
+            android:layout_marginBottom="32dp"
+            app:cardBackgroundColor="?attr/cardBackground">
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="220dp"
+                android:padding="16dp"
+                android:background="?attr/cardBackground">
+
+                <TextView
+                    android:id="@+id/card_number"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentStart="true"
+                    android:layout_alignParentTop="true"
+                    android:text="8765 4321 9012 3456"
+                    android:textSize="25sp"
+                    android:background="?attr/cardBackground"
+                    android:textColor="?attr/cardTextColor"
+                    android:layout_marginBottom="8dp"/>
+
+                <!-- Логотип Mastercard -->
+                <ImageView
+                    android:id="@+id/mastercard_logo"
+                    android:layout_width="64dp"
+                    android:layout_height="64dp"
+                    android:layout_alignParentEnd="true"
+                    android:layout_alignParentTop="true"
+                    android:src="@drawable/mastercard_logo"
+                    android:background="?attr/cardBackground"
+                    android:contentDescription="Mastercard Logo" />
+
+                <!-- Емблема банку -->
+                <ImageView
+                    android:id="@+id/bank_logo"
+                    android:layout_width="100dp"
+                    android:layout_height="100dp"
+                    android:layout_alignParentStart="true"
+                    android:layout_alignParentBottom="true"
+                    android:layout_marginStart="24dp"
+                    android:layout_marginBottom="24dp"
+                    android:src="@drawable/bank_icon"
+                    android:background="?attr/cardBackground"
+                    android:contentDescription="Bank Logo" />
+
+                <TextView
+                    android:id="@+id/card_balance"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentEnd="true"
+                    android:layout_alignParentBottom="true"
+                    android:text="Баланс: 10000.00 UAH"
+                    android:textSize="18sp"
+                    android:background="?attr/cardBackground"
+                    android:textColor="?attr/cardTextColor" />
+            </RelativeLayout>
+        </androidx.cardview.widget.CardView>
+
+        <!-- Кнопки -->
+        <Button
+            android:id="@+id/button_recharge"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Поповнити рахунок"
+            android:textSize="16sp"
+            android:padding="12dp"
+            android:layout_marginBottom="16dp" />
+
+        <Button
+            android:id="@+id/button_transfer"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Переказати кошти"
+            android:textSize="16sp"
+            android:padding="12dp"
+            android:layout_marginBottom="8dp"/>
+
+        <!-- Секція курсів валют -->
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Курси валют"
+            android:textSize="24sp"
+            android:textStyle="bold"
+            android:layout_marginTop="16dp"
+            android:layout_marginBottom="8dp" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Покупка"
+            android:textSize="18sp"
+            android:textStyle="bold"
+            android:layout_marginTop="8dp"
+            android:layout_marginBottom="8dp" />
+
+        <!-- Долар до гривні -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            android:layout_marginBottom="8dp">
+
+            <ImageView
+                android:layout_width="64dp"
+                android:layout_height="48dp"
+                android:src="@drawable/flag_usd"
+                android:contentDescription="Прапор США"
+                android:layout_marginEnd="16dp" />
+
+            <ImageView
+                android:layout_width="64dp"
+                android:layout_height="48dp"
+                android:src="@drawable/flag_ukr"
+                android:contentDescription="Прапор України"
+                android:layout_marginEnd="16dp" />
+
+            <TextView
+                android:id="@+id/exchange_rate_usd"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="USD/UAH: 41.50"
+                android:textSize="16sp" />
+        </LinearLayout>
+
+        <!-- Євро до гривні -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center_vertical">
+
+            <ImageView
+                android:layout_width="64dp"
+                android:layout_height="48dp"
+                android:src="@drawable/flag_eur"
+                android:contentDescription="Прапор ЄС"
+                android:layout_marginEnd="16dp" />
+
+            <ImageView
+                android:layout_width="64dp"
+                android:layout_height="48dp"
+                android:src="@drawable/flag_ukr"
+                android:contentDescription="Прапор України"
+                android:layout_marginEnd="16dp" />
+
+            <TextView
+                android:id="@+id/exchange_rate_eur"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="EUR/UAH: 45.20"
+                android:textSize="16sp" />
+        </LinearLayout>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Продаж"
+            android:textSize="18sp"
+            android:textStyle="bold"
+            android:layout_marginTop="8dp"
+            android:layout_marginBottom="8dp" />
+
+        <!-- Долар до гривні -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            android:layout_marginBottom="8dp">
+
+            <ImageView
+                android:layout_width="64dp"
+                android:layout_height="48dp"
+                android:src="@drawable/flag_ukr"
+                android:contentDescription="Прапор України"
+                android:layout_marginEnd="16dp" />
+
+            <ImageView
+                android:layout_width="64dp"
+                android:layout_height="48dp"
+                android:src="@drawable/flag_usd"
+                android:contentDescription="Прапор США"
+                android:layout_marginEnd="16dp" />
+
+
+            <TextView
+                android:id="@+id/exchange_rate_dollar_sale"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="UAH/USD: 41.84"
+                android:textSize="16sp" />
+        </LinearLayout>
+
+        <!-- Євро до гривні -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center_vertical">
+
+            <ImageView
+                android:layout_width="64dp"
+                android:layout_height="48dp"
+                android:src="@drawable/flag_ukr"
+                android:contentDescription="Прапор України"
+                android:layout_marginEnd="16dp" />
+
+            <ImageView
+                android:layout_width="64dp"
+                android:layout_height="48dp"
+                android:src="@drawable/flag_eur"
+                android:contentDescription="Прапор ЄС"
+                android:layout_marginEnd="16dp" />
+
+
+
+            <TextView
+                android:id="@+id/exchange_rate_eur_sale"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="UAH/EUR: 47.20"
+                android:textSize="16sp" />
+        </LinearLayout>
+
+    </LinearLayout>
+</ScrollView>

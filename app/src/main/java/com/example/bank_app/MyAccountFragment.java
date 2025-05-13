@@ -2,6 +2,8 @@ package com.example.bank_app;
 
 import android.app.AlertDialog;
 import android.os.Bundle;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -51,10 +53,7 @@ public class MyAccountFragment extends Fragment {
         Button transferButton = view.findViewById(R.id.button_transfer);
 
         rechargeButton.setOnClickListener(v -> showRechargeDialog(login, dbHelper, cardBalance));
-
-        transferButton.setOnClickListener(v -> {
-            Toast.makeText(getContext(), "Функція переказу коштів в розробці", Toast.LENGTH_SHORT).show();
-        });
+        transferButton.setOnClickListener(v -> showTransferDialog(login, dbHelper, cardBalance));
 
         // Курси валют (імітація, у реальному додатку потрібно брати з API)
         TextView exchangeRateUsd = view.findViewById(R.id.exchange_rate_usd);
@@ -107,6 +106,95 @@ public class MyAccountFragment extends Fragment {
                 }
             } else {
                 Toast.makeText(getContext(), "Введіть суму", Toast.LENGTH_SHORT).show();
+            }
+        });
+
+        dialog.show();
+    }
+
+    private void showTransferDialog(String senderLogin, DatabaseHelper dbHelper, TextView cardBalance) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
+        LayoutInflater inflater = requireActivity().getLayoutInflater();
+        View dialogView = inflater.inflate(R.layout.dialog_transfer, null);
+        builder.setView(dialogView);
+
+        EditText editCardNumber = dialogView.findViewById(R.id.edit_card_number);
+        EditText editAmount = dialogView.findViewById(R.id.edit_amount);
+        Button cancelButton = dialogView.findViewById(R.id.button_cancel);
+        Button confirmButton = dialogView.findViewById(R.id.button_confirm);
+
+        // TextWatcher для автоматичного форматування номера картки
+        editCardNumber.addTextChangedListener(new TextWatcher() {
+            private boolean isFormatting;
+
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                if (isFormatting) return;
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+                if (isFormatting) return;
+
+                isFormatting = true;
+                String input = s.toString().replaceAll("[^0-9]", "");
+                StringBuilder formatted = new StringBuilder();
+
+                for (int i = 0; i < input.length(); i++) {
+                    if (i > 0 && i % 4 == 0) {
+                        formatted.append(" ");
+                    }
+                    formatted.append(input.charAt(i));
+                }
+
+                if (!formatted.toString().equals(s.toString())) {
+                    int selection = editCardNumber.getSelectionEnd();
+                    editCardNumber.setText(formatted.toString());
+                    editCardNumber.setSelection(Math.min(selection + (formatted.length() - s.length()), formatted.length()));
+                }
+                isFormatting = false;
+            }
+        });
+
+        AlertDialog dialog = builder.create();
+
+        cancelButton.setOnClickListener(v -> dialog.dismiss());
+        confirmButton.setOnClickListener(v -> {
+            String cardNumberStr = editCardNumber.getText().toString().trim();
+            String amountStr = editAmount.getText().toString().trim();
+
+            if (cardNumberStr.isEmpty() || amountStr.isEmpty()) {
+                Toast.makeText(getContext(), "Введіть номер картки та суму", Toast.LENGTH_SHORT).show();
+                return;
+            }
+
+            try {
+                double amount = Double.parseDouble(amountStr);
+                if (amount <= 0) {
+                    Toast.makeText(getContext(), "Сума повинна бути додатньою", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+
+                if (cardNumberStr.length() != 19) { // Перевірка формату: 4-4-4-4 з пробілами
+                    Toast.makeText(getContext(), "Невірний формат номера картки", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+
+                if (dbHelper.transferBalance(senderLogin, cardNumberStr, amount)) {
+                    DatabaseHelper.User updatedUser = dbHelper.getUser(senderLogin);
+                    if (updatedUser != null) {
+                        cardBalance.setText("Баланс: " + String.format("%.2f", updatedUser.getBalance()) + " UAH");
+                        Toast.makeText(getContext(), "Переказ виконано на " + amount + " UAH", Toast.LENGTH_SHORT).show();
+                    }
+                } else {
+                    Toast.makeText(getContext(), "Помилка переказу. Перевірте дані", Toast.LENGTH_SHORT).show();
+                }
+                dialog.dismiss();
+            } catch (NumberFormatException e) {
+                Toast.makeText(getContext(), "Невірний формат суми", Toast.LENGTH_SHORT).show();
             }
         });
 

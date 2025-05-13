@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:padding="16dp"
+    android:background="?attr/background_color">
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Переказ коштів"
+        android:textSize="18sp"
+        android:textStyle="bold"
+        android:layout_marginBottom="16dp"
+        android:textColor="?attr/textColor"/>
+
+    <EditText
+        android:id="@+id/edit_card_number"
+        style="?attr/appEditTextStyle"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="16dp"
+        android:hint="Номер картки отримувача"
+        android:inputType="number"
+        android:maxLength="19"
+        android:minHeight="48dp"
+        android:background="@drawable/edit_text_background"
+        android:textColor="?attr/textColor"
+        android:textColorHint="?attr/hintColor" />
+
+    <EditText
+        android:id="@+id/edit_amount"
+        style="?attr/appEditTextStyle"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="16dp"
+        android:hint="Сума (UAH)"
+        android:inputType="numberDecimal"
+        android:minHeight="48dp"
+        android:background="@drawable/edit_text_background"
+        android:textColor="?attr/textColor"
+        android:textColorHint="?attr/hintColor" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="end">
+
+        <Button
+            android:id="@+id/button_cancel"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Скасувати"
+            android:layout_marginEnd="8dp"
+            style="?attr/appButtonStyle"/>
+
+        <Button
+            android:id="@+id/button_confirm"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Підтвердити"
+            style="?attr/appButtonStyle"/>
+    </LinearLayout>
+</LinearLayout>

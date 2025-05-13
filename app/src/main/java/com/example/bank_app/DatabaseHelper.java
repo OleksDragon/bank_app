@@ -123,6 +123,26 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         return null;
     }
 
+    public User getUserByCardNumber(String cardNumber) {
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor cursor = db.query(TABLE_USERS,
+                new String[]{COLUMN_CARD_NUMBER, COLUMN_BALANCE, COLUMN_LOGIN},
+                COLUMN_CARD_NUMBER + "=?",
+                new String[]{cardNumber.trim()}, null, null, null);
+
+        if (cursor != null && cursor.moveToFirst()) {
+            String foundCardNumber = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_CARD_NUMBER));
+            double balance = cursor.getDouble(cursor.getColumnIndexOrThrow(COLUMN_BALANCE));
+            String userLogin = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_LOGIN));
+            cursor.close();
+            return new User(foundCardNumber, balance);
+        }
+        if (cursor != null) {
+            cursor.close();
+        }
+        return null;
+    }
+
     public boolean rechargeBalance(String login, double amount) {
         SQLiteDatabase db = this.getWritableDatabase();
         // Отримуємо поточний баланс
@@ -154,6 +174,75 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         } catch (Exception e) {
             Log.e(TAG, "Помилка поповнення балансу: " + e.getMessage());
             return false;
+        }
+    }
+
+    public boolean transferBalance(String senderLogin, String receiverCardNumber, double amount) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        db.beginTransaction();
+
+        try {
+            // Перевіряємо відправника
+            Cursor senderCursor = db.query(TABLE_USERS, new String[]{COLUMN_BALANCE, COLUMN_LOGIN},
+                    COLUMN_LOGIN + "=?", new String[]{senderLogin.toLowerCase().trim()}, null, null, null);
+            double senderBalance = 0.0;
+            if (senderCursor != null && senderCursor.moveToFirst()) {
+                senderBalance = senderCursor.getDouble(senderCursor.getColumnIndexOrThrow(COLUMN_BALANCE));
+                senderCursor.close();
+            } else {
+                if (senderCursor != null) senderCursor.close();
+                return false;
+            }
+
+            if (senderBalance < amount) {
+                Log.w(TAG, "Недостатньо коштів для переказу: " + senderLogin);
+                return false;
+            }
+
+            // Знаходимо отримувача
+            User receiver = getUserByCardNumber(receiverCardNumber);
+            if (receiver == null) {
+                Log.w(TAG, "Отримувач не знайден: " + receiverCardNumber);
+                return false;
+            }
+
+            // Оновлюємо баланс відправника
+            double newSenderBalance = senderBalance - amount;
+            ContentValues senderValues = new ContentValues();
+            senderValues.put(COLUMN_BALANCE, newSenderBalance);
+            int senderRowsAffected = db.update(TABLE_USERS, senderValues, COLUMN_LOGIN + "=?", new String[]{senderLogin.toLowerCase().trim()});
+            if (senderRowsAffected <= 0) {
+                Log.w(TAG, "Помилка оновлення балансу відправника: " + senderLogin);
+                db.endTransaction();
+                return false;
+            }
+
+            // Оновлюємо баланс отримувача
+            Cursor receiverCursor = db.query(TABLE_USERS, new String[]{COLUMN_BALANCE},
+                    COLUMN_CARD_NUMBER + "=?", new String[]{receiverCardNumber.trim()}, null, null, null);
+            double receiverBalance = 0.0;
+            if (receiverCursor != null && receiverCursor.moveToFirst()) {
+                receiverBalance = receiverCursor.getDouble(receiverCursor.getColumnIndexOrThrow(COLUMN_BALANCE));
+                receiverCursor.close();
+            }
+            double newReceiverBalance = receiverBalance + amount;
+            ContentValues receiverValues = new ContentValues();
+            receiverValues.put(COLUMN_BALANCE, newReceiverBalance);
+            int receiverRowsAffected = db.update(TABLE_USERS, receiverValues, COLUMN_CARD_NUMBER + "=?", new String[]{receiverCardNumber.trim()});
+            if (receiverRowsAffected <= 0) {
+                Log.w(TAG, "Помилка оновлення балансу отримувача: " + receiverCardNumber);
+                db.endTransaction();
+                return false;
+            }
+
+            db.setTransactionSuccessful();
+            Log.d(TAG, "Переказ виконано: від " + senderLogin + " до " + receiverCardNumber + ", сума: " + amount);
+            return true;
+        } catch (Exception e) {
+            Log.e(TAG, "Помилка переказу: " + e.getMessage());
+            return false;
+        } finally {
+            db.endTransaction();
         }
     }
 

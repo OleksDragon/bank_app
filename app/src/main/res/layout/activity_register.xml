@@ -27,8 +27,9 @@
         android:layout_height="wrap_content"
         android:hint="Ім'я"
         android:background="@drawable/edit_text_background"
+        android:textColor="?attr/textColor"
+        android:textColorHint="?attr/hintColor"
         android:layout_marginTop="32dp"
-        android:textColor="@color/text_color_light"
         android:padding="16dp" />
 
     <EditText
@@ -38,8 +39,9 @@
         android:hint="Пошта"
         android:inputType="textEmailAddress"
         android:background="@drawable/edit_text_background"
+        android:textColor="?attr/textColor"
+        android:textColorHint="?attr/hintColor"
         android:layout_marginTop="16dp"
-        android:textColor="@color/text_color_light"
         android:padding="16dp" />
 
     <EditText
@@ -49,8 +51,9 @@
         android:hint="Пароль"
         android:inputType="textPassword"
         android:background="@drawable/edit_text_background"
+        android:textColor="?attr/textColor"
+        android:textColorHint="?attr/hintColor"
         android:layout_marginTop="16dp"
-        android:textColor="@color/text_color_light"
         android:padding="16dp" />
 
     <EditText
@@ -60,8 +63,9 @@
         android:hint="Підтвердьте пароль"
         android:inputType="textPassword"
         android:background="@drawable/edit_text_background"
+        android:textColor="?attr/textColor"
+        android:textColorHint="?attr/hintColor"
         android:layout_marginTop="16dp"
-        android:textColor="@color/text_color_light"
         android:padding="16dp" />
 
     <Button

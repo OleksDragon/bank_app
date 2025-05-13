@@ -28,8 +28,9 @@
         android:hint="Логін"
         android:layout_marginTop="32dp"
         android:padding="16dp"
-        android:textColor="@color/text_color_light"
-        style="@style/AppEditText" />
+        android:background="@drawable/edit_text_background"
+        android:textColor="?attr/textColor"
+        android:textColorHint="?attr/hintColor" />
 
     <EditText
         android:id="@+id/passwordEditText"
@@ -39,8 +40,9 @@
         android:inputType="textPassword"
         android:layout_marginTop="16dp"
         android:padding="16dp"
-        android:textColor="@color/text_color_light"
-        style="@style/AppEditText" />
+        android:background="@drawable/edit_text_background"
+        android:textColor="?attr/textColor"
+        android:textColorHint="?attr/hintColor" />
 
     <TextView
         android:id="@+id/forgotPasswordText"

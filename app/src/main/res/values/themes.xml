@@ -1,19 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
 <resources xmlns:tools="http://schemas.android.com/tools">
     <!-- Світла тема -->
     <style name="Theme.BankApp.Light" parent="Theme.AppCompat.Light.NoActionBar">
         <item name="android:background">@color/background_color_light</item>
         <item name="android:textColor">@color/text_color_light</item>
-        <item name="android:textColorHint">@color/text_color_light</item>
+        <item name="android:textColorHint">@color/hint_color_light</item>
         <item name="colorButtonNormal">@color/button_background_light</item>
         <item name="android:textColorPrimary">@color/button_text_light</item>
         <item name="android:editTextBackground">@color/edit_text_background_light</item>
         <item name="android:textColorLink">@color/link_color_light</item>
         <item name="android:buttonStyle">@style/AppButton.Light</item>
-        <!-- Кастомні стилі -->
+        <!-- Кастомні атрибути -->
+        <item name="background_color">@color/background_color_light</item>
+        <item name="textColor">@color/text_color_light</item>
+        <item name="hintColor">@color/hint_color_light</item>
         <item name="appButtonStyle">@style/AppButton.Light</item>
         <item name="appEditTextStyle">@style/AppEditText.Light</item>
         <item name="appLinkTextViewStyle">@style/AppLinkTextView.Light</item>
-        <!-- Кольори для картки -->
         <item name="cardBackground">@color/card_background_light</item>
         <item name="cardTextColor">@color/card_text_color_light</item>
     </style>
@@ -22,17 +25,19 @@
     <style name="Theme.BankApp.Dark" parent="Theme.AppCompat.NoActionBar">
         <item name="android:background">@color/background_color_dark</item>
         <item name="android:textColor">@color/text_color_dark</item>
-        <item name="android:textColorHint">@color/text_color_dark</item>
+        <item name="android:textColorHint">@color/hint_color_dark</item>
         <item name="colorButtonNormal">@color/button_background_dark</item>
         <item name="android:textColorPrimary">@color/button_text_dark</item>
         <item name="android:editTextBackground">@color/edit_text_background_dark</item>
         <item name="android:textColorLink">@color/link_color_dark</item>
         <item name="android:buttonStyle">@style/AppButton.Dark</item>
-        <!-- Кастомні стилі -->
+        <!-- Кастомні атрибути -->
+        <item name="background_color">@color/background_color_dark</item>
+        <item name="textColor">@color/text_color_dark</item>
+        <item name="hintColor">@color/hint_color_dark</item>
         <item name="appButtonStyle">@style/AppButton.Dark</item>
         <item name="appEditTextStyle">@style/AppEditText.Dark</item>
         <item name="appLinkTextViewStyle">@style/AppLinkTextView.Dark</item>
-        <!-- Кольори для картки -->
         <item name="cardBackground">@color/card_background_dark</item>
         <item name="cardTextColor">@color/card_text_color_dark</item>
     </style>
@@ -42,12 +47,12 @@
 
     <!-- Стиль для кнопок -->
     <style name="AppButton" parent="Widget.AppCompat.Button">
-        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">wrap_content</item>
-        <item name="android:padding">16dp</item>
-        <item name="android:layout_marginTop">16dp</item>
+        <item name="android:padding">12dp</item>
+        <item name="android:layout_marginTop">8dp</item>
         <item name="android:background">@drawable/button_background</item>
-        <item name="android:textSize">16sp</item>
+        <item name="android:textSize">14sp</item>
         <item name="android:textStyle">bold</item>
     </style>
 
@@ -65,8 +70,8 @@
     <style name="AppEditText" parent="Widget.AppCompat.EditText">
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">wrap_content</item>
-        <item name="android:padding">16dp</item>
-        <item name="android:layout_marginTop">16dp</item>
+        <item name="android:padding">12dp</item>
+        <item name="android:layout_marginTop">8dp</item>
         <item name="android:background">@drawable/edit_text_background</item>
         <item name="android:textSize">16sp</item>
     </style>
@@ -74,13 +79,13 @@
     <style name="AppEditText.Light">
         <item name="android:background">@color/edit_text_background_light</item>
         <item name="android:textColor">@color/text_color_light</item>
-        <item name="android:textColorHint">@color/text_color_light</item>
+        <item name="android:textColorHint">@color/hint_color_light</item>
     </style>
 
     <style name="AppEditText.Dark">
         <item name="android:background">@color/edit_text_background_dark</item>
         <item name="android:textColor">@color/text_color_dark</item>
-        <item name="android:textColorHint">@color/text_color_dark</item>
+        <item name="android:textColorHint">@color/hint_color_dark</item>
     </style>
 
     <!-- Стиль для посилань (TextView) -->

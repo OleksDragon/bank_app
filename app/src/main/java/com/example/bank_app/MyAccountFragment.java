@@ -1,10 +1,12 @@
 package com.example.bank_app;
 
+import android.app.AlertDialog;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 import androidx.fragment.app.Fragment;
@@ -48,9 +50,7 @@ public class MyAccountFragment extends Fragment {
         Button rechargeButton = view.findViewById(R.id.button_recharge);
         Button transferButton = view.findViewById(R.id.button_transfer);
 
-        rechargeButton.setOnClickListener(v -> {
-            Toast.makeText(getContext(), "Функція поповнення рахунку в розробці", Toast.LENGTH_SHORT).show();
-        });
+        rechargeButton.setOnClickListener(v -> showRechargeDialog(login, dbHelper, cardBalance));
 
         transferButton.setOnClickListener(v -> {
             Toast.makeText(getContext(), "Функція переказу коштів в розробці", Toast.LENGTH_SHORT).show();
@@ -68,5 +68,48 @@ public class MyAccountFragment extends Fragment {
         exchangeRateEur.setText("EUR/UAH: " + String.format("%.2f", eurToUah));
 
         return view;
+    }
+
+    private void showRechargeDialog(String login, DatabaseHelper dbHelper, TextView cardBalance) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
+        LayoutInflater inflater = requireActivity().getLayoutInflater();
+        View dialogView = inflater.inflate(R.layout.dialog_recharge, null);
+        builder.setView(dialogView);
+
+        EditText editAmount = dialogView.findViewById(R.id.edit_amount);
+        Button cancelButton = dialogView.findViewById(R.id.button_cancel);
+        Button confirmButton = dialogView.findViewById(R.id.button_confirm);
+
+        AlertDialog dialog = builder.create();
+
+        cancelButton.setOnClickListener(v -> dialog.dismiss());
+        confirmButton.setOnClickListener(v -> {
+            String amountStr = editAmount.getText().toString().trim();
+            if (!amountStr.isEmpty()) {
+                try {
+                    double amount = Double.parseDouble(amountStr);
+                    if (amount > 0) {
+                        if (dbHelper.rechargeBalance(login, amount)) {
+                            DatabaseHelper.User updatedUser = dbHelper.getUser(login);
+                            if (updatedUser != null) {
+                                cardBalance.setText("Баланс: " + String.format("%.2f", updatedUser.getBalance()) + " UAH");
+                                Toast.makeText(getContext(), "Рахунок поповнено на " + amount + " UAH", Toast.LENGTH_SHORT).show();
+                            }
+                        } else {
+                            Toast.makeText(getContext(), "Помилка поповнення рахунку", Toast.LENGTH_SHORT).show();
+                        }
+                        dialog.dismiss();
+                    } else {
+                        Toast.makeText(getContext(), "Сума повинна бути додатною", Toast.LENGTH_SHORT).show();
+                    }
+                } catch (NumberFormatException e) {
+                    Toast.makeText(getContext(), "Невірний формат суми", Toast.LENGTH_SHORT).show();
+                }
+            } else {
+                Toast.makeText(getContext(), "Введіть суму", Toast.LENGTH_SHORT).show();
+            }
+        });
+
+        dialog.show();
     }
 }

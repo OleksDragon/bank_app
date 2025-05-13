@@ -123,6 +123,40 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         return null;
     }
 
+    public boolean rechargeBalance(String login, double amount) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        // Отримуємо поточний баланс
+        Cursor cursor = db.query(TABLE_USERS, new String[]{COLUMN_BALANCE},
+                COLUMN_LOGIN + "=?", new String[]{login.toLowerCase().trim()}, null, null, null);
+        double currentBalance = 0.0;
+        if (cursor != null && cursor.moveToFirst()) {
+            currentBalance = cursor.getDouble(cursor.getColumnIndexOrThrow(COLUMN_BALANCE));
+            cursor.close();
+        } else {
+            if (cursor != null) cursor.close();
+            return false;
+        }
+
+        // Додаємо нову суму до поточного балансу
+        double newBalance = currentBalance + amount;
+        ContentValues values = new ContentValues();
+        values.put(COLUMN_BALANCE, newBalance);
+
+        try {
+            int rowsAffected = db.update(TABLE_USERS, values, COLUMN_LOGIN + "=?", new String[]{login.toLowerCase().trim()});
+            if (rowsAffected > 0) {
+                Log.d(TAG, "Баланс поповнено для користувача: " + login + ", сума: " + amount + ", новий баланс: " + newBalance);
+                return true;
+            } else {
+                Log.w(TAG, "Користувач не знайден для поповнення: " + login);
+                return false;
+            }
+        } catch (Exception e) {
+            Log.e(TAG, "Помилка поповнення балансу: " + e.getMessage());
+            return false;
+        }
+    }
+
     // Клас для збереження даних користувача
     public static class User {
         private final String cardNumber;

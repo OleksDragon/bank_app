@@ -7,18 +7,30 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
 
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+import java.util.Locale;
 import java.util.Random;
 
 public class DatabaseHelper extends SQLiteOpenHelper {
 
     private static final String DATABASE_NAME = "BankApp.db";
-    private static final int DATABASE_VERSION = 1;
+    private static final int DATABASE_VERSION = 2;
     private static final String TABLE_USERS = "users";
+    private static final String TABLE_TRANSACTIONS = "transactions";
     private static final String COLUMN_ID = "id";
     private static final String COLUMN_LOGIN = "login";
     private static final String COLUMN_PASSWORD = "password";
     private static final String COLUMN_CARD_NUMBER = "card_number";
     private static final String COLUMN_BALANCE = "balance";
+    private static final String COLUMN_TRANS_ID = "trans_id";
+    private static final String COLUMN_SENDER_CARD = "sender_card";
+    private static final String COLUMN_RECEIVER_CARD = "receiver_card";
+    private static final String COLUMN_AMOUNT = "amount";
+    private static final String COLUMN_DATE_TIME = "date_time";
+    private static final String COLUMN_SUCCESS = "success";
     private static final String TAG = "DatabaseHelper";
 
     public DatabaseHelper(Context context) {
@@ -27,13 +39,22 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
     @Override
     public void onCreate(SQLiteDatabase db) {
-        String createTable = "CREATE TABLE " + TABLE_USERS + " (" +
+        String createUsersTable = "CREATE TABLE IF NOT EXISTS " + TABLE_USERS + " (" +
                 COLUMN_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
                 COLUMN_LOGIN + " TEXT UNIQUE, " +
                 COLUMN_PASSWORD + " TEXT, " +
                 COLUMN_CARD_NUMBER + " TEXT, " +
                 COLUMN_BALANCE + " REAL)";
-        db.execSQL(createTable);
+        db.execSQL(createUsersTable);
+
+        String createTransactionsTable = "CREATE TABLE IF NOT EXISTS " + TABLE_TRANSACTIONS + " (" +
+                COLUMN_TRANS_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
+                COLUMN_SENDER_CARD + " TEXT, " +
+                COLUMN_RECEIVER_CARD + " TEXT, " +
+                COLUMN_AMOUNT + " REAL, " +
+                COLUMN_DATE_TIME + " TEXT, " +
+                COLUMN_SUCCESS + " INTEGER)";
+        db.execSQL(createTransactionsTable);
 
         // Додаємо тестового користувача
         ContentValues values = new ContentValues();
@@ -46,19 +67,20 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-        db.execSQL("DROP TABLE IF EXISTS " + TABLE_USERS);
-        onCreate(db);
+        if (oldVersion < 2) {
+            // Оновлюємо схему, зберігаючи дані, якщо можливо
+            db.execSQL("DROP TABLE IF EXISTS " + TABLE_USERS);
+            onCreate(db);
+        }
     }
 
     public boolean addUser(String login, String password) {
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues values = new ContentValues();
 
-        // Нормалізація логіна та пароля
         String normalizedLogin = login.toLowerCase().trim();
         String normalizedPassword = password.trim();
 
-        // Генеруємо унікальний номер картки
         String cardNumber = generateCardNumber();
         values.put(COLUMN_LOGIN, normalizedLogin);
         values.put(COLUMN_PASSWORD, normalizedPassword);
@@ -82,7 +104,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             int digit = random.nextInt(10);
             cardNumber.append(digit);
             if (i % 4 == 3 && i < 15) {
-                cardNumber.append(" "); // Додаємо пробіл кожні 4 цифри
+                cardNumber.append(" ");
             }
         }
         return cardNumber.toString();
@@ -90,7 +112,6 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
     public boolean checkUser(String login, String password) {
         SQLiteDatabase db = this.getReadableDatabase();
-        // Нормалізація введених даних
         String normalizedLogin = login.toLowerCase().trim();
         String normalizedPassword = password.trim();
         Log.d(TAG, "Перевірка користувача: login=" + normalizedLogin + ", password=" + normalizedPassword);
@@ -145,19 +166,20 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
     public boolean rechargeBalance(String login, double amount) {
         SQLiteDatabase db = this.getWritableDatabase();
-        // Отримуємо поточний баланс
-        Cursor cursor = db.query(TABLE_USERS, new String[]{COLUMN_BALANCE},
+        Cursor cursor = db.query(TABLE_USERS,
+                new String[]{COLUMN_BALANCE, COLUMN_CARD_NUMBER},
                 COLUMN_LOGIN + "=?", new String[]{login.toLowerCase().trim()}, null, null, null);
         double currentBalance = 0.0;
+        String cardNumber = "";
         if (cursor != null && cursor.moveToFirst()) {
             currentBalance = cursor.getDouble(cursor.getColumnIndexOrThrow(COLUMN_BALANCE));
+            cardNumber = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_CARD_NUMBER));
             cursor.close();
         } else {
             if (cursor != null) cursor.close();
             return false;
         }
 
-        // Додаємо нову суму до поточного балансу
         double newBalance = currentBalance + amount;
         ContentValues values = new ContentValues();
         values.put(COLUMN_BALANCE, newBalance);
@@ -166,6 +188,18 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             int rowsAffected = db.update(TABLE_USERS, values, COLUMN_LOGIN + "=?", new String[]{login.toLowerCase().trim()});
             if (rowsAffected > 0) {
                 Log.d(TAG, "Баланс поповнено для користувача: " + login + ", сума: " + amount + ", новий баланс: " + newBalance);
+
+                // Фіксація поповнення як транзакції
+                SimpleDateFormat sdf = new SimpleDateFormat("dd.MM.yyyy HH:mm:ss", Locale.getDefault());
+                String dateTime = sdf.format(new Date());
+                ContentValues transactionValues = new ContentValues();
+                transactionValues.put(COLUMN_SENDER_CARD, "SYSTEM"); // Позначка, що це поповнення
+                transactionValues.put(COLUMN_RECEIVER_CARD, cardNumber);
+                transactionValues.put(COLUMN_AMOUNT, amount);
+                transactionValues.put(COLUMN_DATE_TIME, dateTime);
+                transactionValues.put(COLUMN_SUCCESS, 1); // Успішне поповнення
+                db.insert(TABLE_TRANSACTIONS, null, transactionValues);
+
                 return true;
             } else {
                 Log.w(TAG, "Користувач не знайден для поповнення: " + login);
@@ -183,11 +217,13 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
         try {
             // Перевіряємо відправника
-            Cursor senderCursor = db.query(TABLE_USERS, new String[]{COLUMN_BALANCE, COLUMN_LOGIN},
+            Cursor senderCursor = db.query(TABLE_USERS, new String[]{COLUMN_BALANCE, COLUMN_LOGIN, COLUMN_CARD_NUMBER},
                     COLUMN_LOGIN + "=?", new String[]{senderLogin.toLowerCase().trim()}, null, null, null);
             double senderBalance = 0.0;
+            String senderCardNumber = "";
             if (senderCursor != null && senderCursor.moveToFirst()) {
                 senderBalance = senderCursor.getDouble(senderCursor.getColumnIndexOrThrow(COLUMN_BALANCE));
+                senderCardNumber = senderCursor.getString(senderCursor.getColumnIndexOrThrow(COLUMN_CARD_NUMBER));
                 senderCursor.close();
             } else {
                 if (senderCursor != null) senderCursor.close();
@@ -235,6 +271,17 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 return false;
             }
 
+            // Фіксуємо транзакцію
+            SimpleDateFormat sdf = new SimpleDateFormat("dd.MM.yyyy HH:mm:ss", Locale.getDefault());
+            String dateTime = sdf.format(new Date());
+            ContentValues transactionValues = new ContentValues();
+            transactionValues.put(COLUMN_SENDER_CARD, senderCardNumber);
+            transactionValues.put(COLUMN_RECEIVER_CARD, receiverCardNumber);
+            transactionValues.put(COLUMN_AMOUNT, amount);
+            transactionValues.put(COLUMN_DATE_TIME, dateTime);
+            transactionValues.put(COLUMN_SUCCESS, 1); // 1 - успіх, 0 - невдача
+            db.insert(TABLE_TRANSACTIONS, null, transactionValues);
+
             db.setTransactionSuccessful();
             Log.d(TAG, "Переказ виконано: від " + senderLogin + " до " + receiverCardNumber + ", сума: " + amount);
             return true;
@@ -246,22 +293,28 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         }
     }
 
-    // Клас для збереження даних користувача
-    public static class User {
-        private final String cardNumber;
-        private final double balance;
+    public List<Transaction> getTransactionsByCardNumber(String cardNumber) {
+        List<Transaction> transactions = new ArrayList<>();
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor cursor = db.query(TABLE_TRANSACTIONS,
+                new String[]{COLUMN_TRANS_ID, COLUMN_SENDER_CARD, COLUMN_RECEIVER_CARD, COLUMN_AMOUNT, COLUMN_DATE_TIME, COLUMN_SUCCESS},
+                COLUMN_SENDER_CARD + "=? OR " + COLUMN_RECEIVER_CARD + "=?",
+                new String[]{cardNumber.trim(), cardNumber.trim()}, null, null, COLUMN_DATE_TIME + " DESC");
 
-        public User(String cardNumber, double balance) {
-            this.cardNumber = cardNumber;
-            this.balance = balance;
+        if (cursor != null && cursor.moveToFirst()) {
+            do {
+                int transId = cursor.getInt(cursor.getColumnIndexOrThrow(COLUMN_TRANS_ID));
+                String senderCard = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_SENDER_CARD));
+                String receiverCard = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_RECEIVER_CARD));
+                double amount = cursor.getDouble(cursor.getColumnIndexOrThrow(COLUMN_AMOUNT));
+                String dateTime = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_DATE_TIME));
+                int success = cursor.getInt(cursor.getColumnIndexOrThrow(COLUMN_SUCCESS));
+                transactions.add(new Transaction(transId, senderCard, receiverCard, amount, dateTime, success == 1));
+            } while (cursor.moveToNext());
+            cursor.close();
+        } else if (cursor != null) {
+            cursor.close();
         }
-
-        public String getCardNumber() {
-            return cardNumber;
-        }
-
-        public double getBalance() {
-            return balance;
-        }
+        return transactions;
     }
 }

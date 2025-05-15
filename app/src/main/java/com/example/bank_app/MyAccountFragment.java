@@ -38,7 +38,7 @@ public class MyAccountFragment extends Fragment {
 
         // Отримуємо дані користувача з бази даних
         DatabaseHelper dbHelper = new DatabaseHelper(getContext());
-        DatabaseHelper.User user = dbHelper.getUser(login);
+        User user = dbHelper.getUser(login);
 
         if (user != null) {
             cardNumber.setText(user.getCardNumber());
@@ -89,7 +89,7 @@ public class MyAccountFragment extends Fragment {
                     double amount = Double.parseDouble(amountStr);
                     if (amount > 0) {
                         if (dbHelper.rechargeBalance(login, amount)) {
-                            DatabaseHelper.User updatedUser = dbHelper.getUser(login);
+                            User updatedUser = dbHelper.getUser(login);
                             if (updatedUser != null) {
                                 cardBalance.setText("Баланс: " + String.format("%.2f", updatedUser.getBalance()) + " UAH");
                                 Toast.makeText(getContext(), "Рахунок поповнено на " + amount + " UAH", Toast.LENGTH_SHORT).show();
@@ -184,7 +184,7 @@ public class MyAccountFragment extends Fragment {
                 }
 
                 if (dbHelper.transferBalance(senderLogin, cardNumberStr, amount)) {
-                    DatabaseHelper.User updatedUser = dbHelper.getUser(senderLogin);
+                    User updatedUser = dbHelper.getUser(senderLogin);
                     if (updatedUser != null) {
                         cardBalance.setText("Баланс: " + String.format("%.2f", updatedUser.getBalance()) + " UAH");
                         Toast.makeText(getContext(), "Переказ виконано на " + amount + " UAH", Toast.LENGTH_SHORT).show();

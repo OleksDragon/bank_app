@@ -3,12 +3,99 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:gravity="center">
+    android:padding="16dp"
+    android:layout_marginTop="32dp">
 
+    <!-- Секція діючих кредитів -->
     <TextView
-        android:id="@+id/text_loans"
+        android:id="@+id/text_loans_title"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:textSize="20sp" />
+        android:text="Діючі кредити"
+        android:textSize="20sp"
+        android:textStyle="bold" />
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="300dp"
+        android:layout_marginTop="8dp">
+
+        <LinearLayout
+            android:id="@+id/loans_container"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical" />
+    </ScrollView>
+
+    <!-- Секція калькулятора -->
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Калькулятор кредиту"
+        android:textSize="20sp"
+        android:textStyle="bold"
+        android:layout_marginTop="16dp" />
+
+    <EditText
+        android:id="@+id/edit_loan_amount"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Сума кредиту (UAH)"
+        android:inputType="numberDecimal"
+        android:minHeight="48dp"
+        android:background="@drawable/edit_text_background"
+        android:textColor="?attr/textColor"
+        android:textColorHint="?attr/hintColor"
+        android:layout_marginBottom="8dp" />
+
+    <EditText
+        android:id="@+id/edit_loan_term"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Термін (місяці)"
+        android:inputType="number"
+        android:minHeight="48dp"
+        android:background="@drawable/edit_text_background"
+        android:textColor="?attr/textColor"
+        android:textColorHint="?attr/hintColor"
+        android:layout_marginBottom="8dp" />
+
+    <EditText
+        android:id="@+id/edit_interest_rate"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Відсоткова ставка (%)"
+        android:inputType="numberDecimal"
+        android:minHeight="48dp"
+        android:background="@drawable/edit_text_background"
+        android:textColor="?attr/textColor"
+        android:textColorHint="?attr/hintColor"
+        android:layout_marginBottom="8dp" />
+
+    <Button
+        android:id="@+id/button_calculate"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Розрахувати"
+        android:layout_gravity="center"
+        android:layout_marginTop="8dp" />
+
+    <TextView
+        android:id="@+id/text_monthly_payment"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text=""
+        android:textSize="20sp"
+        android:layout_gravity="center"
+        android:layout_marginTop="8dp" />
+
+    <!-- Кнопка взяти кредит -->
+    <Button
+        android:id="@+id/button_take_loan"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Взяти кредит"
+        android:layout_gravity="center"
+        android:layout_marginTop="8dp" />
 
 </LinearLayout>

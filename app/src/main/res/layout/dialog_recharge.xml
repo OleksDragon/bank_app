@@ -35,16 +35,18 @@
 
         <Button
             android:id="@+id/button_cancel"
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
+            android:layout_weight="0.6"
+            android:layout_marginEnd="20dp"
             android:text="Скасувати"
-            android:layout_marginEnd="8dp"
             style="?attr/appButtonStyle"/>
 
         <Button
             android:id="@+id/button_confirm"
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
+            android:layout_weight="0.6"
             android:text="Підтвердити"
             style="?attr/appButtonStyle"/>
     </LinearLayout>
